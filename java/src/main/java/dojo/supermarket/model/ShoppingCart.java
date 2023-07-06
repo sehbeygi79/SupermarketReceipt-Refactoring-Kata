@@ -40,17 +40,17 @@ public class ShoppingCart {
                 double unitPrice = catalog.getUnitPrice(p);
                 int quantityAsInt = (int) quantity;
                 Discount discount = null;
-                int x = 1;
+                int minNumOfRequiredItems = 1;
                 if (offer.getOfferType() == SpecialOfferType.THREE_FOR_TWO) {
-                    x = 3;
+                    minNumOfRequiredItems = 3;
                 } else if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT) {
-                    x = 2;
+                    minNumOfRequiredItems = 2;
                 } if (offer.getOfferType() == SpecialOfferType.FIVE_FOR_AMOUNT) {
-                    x = 5;
+                    minNumOfRequiredItems = 5;
                 }
-                int numberOfXs = quantityAsInt / x;
+                int numberOfXs = quantityAsInt / minNumOfRequiredItems;
                 if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT && quantityAsInt >= 2) {
-                    int intDivision = quantityAsInt / x;
+                    int intDivision = quantityAsInt / minNumOfRequiredItems;
                     double pricePerUnit = offer.getArgument() * intDivision;
                     double theTotal = (quantityAsInt % 2) * unitPrice;
                     double total = pricePerUnit + theTotal;
@@ -66,7 +66,7 @@ public class ShoppingCart {
                 }
                 if (offer.getOfferType() == SpecialOfferType.FIVE_FOR_AMOUNT && quantityAsInt >= 5) {
                     double discountTotal = unitPrice * quantity - (offer.getArgument() * numberOfXs + quantityAsInt % 5 * unitPrice);
-                    discount = new Discount(p, x + " for " + offer.getArgument(), -discountTotal);
+                    discount = new Discount(p, minNumOfRequiredItems + " for " + offer.getArgument(), -discountTotal);
                 }
                 if (discount != null)
                     receipt.addDiscount(discount);
