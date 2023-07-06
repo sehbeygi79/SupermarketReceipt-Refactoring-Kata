@@ -43,22 +43,20 @@ public class ShoppingCart {
                 int x = 1;
                 if (offer.getOfferType() == SpecialOfferType.THREE_FOR_TWO) {
                     x = 3;
-
                 } else if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT) {
                     x = 2;
-                    if (quantityAsInt >= 2) {
-                        int intDivision = quantityAsInt / x;
-                        double pricePerUnit = offer.getArgument() * intDivision;
-                        double theTotal = (quantityAsInt % 2) * unitPrice;
-                        double total = pricePerUnit + theTotal;
-                        double discountN = unitPrice * quantity - total;
-                        discount = new Discount(p, "2 for " + offer.getArgument(), -discountN);
-                    }
-
                 } if (offer.getOfferType() == SpecialOfferType.FIVE_FOR_AMOUNT) {
                     x = 5;
                 }
                 int numberOfXs = quantityAsInt / x;
+                if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT && quantityAsInt >= 2) {
+                    int intDivision = quantityAsInt / x;
+                    double pricePerUnit = offer.getArgument() * intDivision;
+                    double theTotal = (quantityAsInt % 2) * unitPrice;
+                    double total = pricePerUnit + theTotal;
+                    double discountN = unitPrice * quantity - total;
+                    discount = new Discount(p, "2 for " + offer.getArgument(), -discountN);
+                }
                 if (offer.getOfferType() == SpecialOfferType.THREE_FOR_TWO && quantityAsInt > 2) {
                     double discountAmount = quantity * unitPrice - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
                     discount = new Discount(p, "3 for 2", -discountAmount);
