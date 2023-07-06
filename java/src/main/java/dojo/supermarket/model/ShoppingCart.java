@@ -49,31 +49,42 @@ public class ShoppingCart {
         }
     }
 
-    private Discount calcDiscount(Product p, Offer offer, double unitPrice, double quantity, int minNumOfRequiredItems) {
+    private Discount calcDiscount(Product p, Offer offer, double unitPrice, double quantity,
+            int minNumOfRequiredItems) {
         int quantityAsInt = (int) quantity;
         int numberOfXs = quantityAsInt / minNumOfRequiredItems;
-        if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT && quantityAsInt >= 2) {
-            int intDivision = quantityAsInt / minNumOfRequiredItems;
-            double pricePerUnit = offer.getArgument() * intDivision;
-            double theTotal = (quantityAsInt % 2) * unitPrice;
-            double total = pricePerUnit + theTotal;
-            double discountN = unitPrice * quantity - total;
-            return new Discount(p, "2 for " + offer.getArgument(), -discountN);
+        Discount discount = null;
+
+        switch (offer.getOfferType()) {
+            case TWO_FOR_AMOUNT:
+                if (quantityAsInt >= 2) {
+                    double pricePerUnit = offer.getArgument() * numberOfXs;
+                    double theTotal = (quantityAsInt % 2) * unitPrice;
+                    double total = pricePerUnit + theTotal;
+                    double discountN =  quantity * unitPrice - total;
+                    discount = new Discount(p, "2 for " + offer.getArgument(), -discountN);
+                }
+                break;
+            case THREE_FOR_TWO:
+                if (quantityAsInt >= 3) {
+                    double discountAmount = quantity * unitPrice
+                            - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
+                    discount = new Discount(p, "3 for 2", -discountAmount);
+                }
+                break;
+            case TEN_PERCENT_DISCOUNT:
+                discount = new Discount(p, offer.getArgument() + "% off",
+                        -quantity * unitPrice * offer.getArgument() / 100.0);
+                break;
+            case FIVE_FOR_AMOUNT:
+                if (quantityAsInt >= 5) {
+                    double discountTotal = quantity * unitPrice
+                            - (offer.getArgument() * numberOfXs + quantityAsInt % 5 * unitPrice);
+                    discount = new Discount(p, minNumOfRequiredItems + " for " + offer.getArgument(), -discountTotal);
+                }
+            default:
+                break;
         }
-        if (offer.getOfferType() == SpecialOfferType.THREE_FOR_TWO && quantityAsInt > 2) {
-            double discountAmount = quantity * unitPrice
-                    - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
-            return new Discount(p, "3 for 2", -discountAmount);
-        }
-        if (offer.getOfferType() == SpecialOfferType.TEN_PERCENT_DISCOUNT) {
-            return new Discount(p, offer.getArgument() + "% off",
-                    -quantity * unitPrice * offer.getArgument() / 100.0);
-        }
-        if (offer.getOfferType() == SpecialOfferType.FIVE_FOR_AMOUNT && quantityAsInt >= 5) {
-            double discountTotal = unitPrice * quantity
-                    - (offer.getArgument() * numberOfXs + quantityAsInt % 5 * unitPrice);
-            return new Discount(p, minNumOfRequiredItems + " for " + offer.getArgument(), -discountTotal);
-        }
-        return null;
+        return discount;
     }
 }
