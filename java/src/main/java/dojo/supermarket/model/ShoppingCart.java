@@ -34,25 +34,18 @@ public class ShoppingCart {
 
     void handleOffers(Receipt receipt, Map<Product, Offer> offers, SupermarketCatalog catalog) {
         for (Product p : productQuantities().keySet()) {
-            double quantity = productQuantities.get(p);
             if (offers.containsKey(p)) {
-                Offer offer = offers.get(p);
-
-                double unitPrice = catalog.getUnitPrice(p);
-                Discount discount = null;
-                int minNumOfRequiredItems = offer.getMinNumOfRequiredItems();
-
-                discount = calcDiscount(p, offer, unitPrice, quantity, minNumOfRequiredItems);
+                Discount discount = calcDiscount(p, offers.get(p),
+                        catalog.getUnitPrice(p), productQuantities.get(p));
                 if (discount != null)
                     receipt.addDiscount(discount);
             }
         }
     }
 
-    private Discount calcDiscount(Product p, Offer offer, double unitPrice, double quantity,
-            int minNumOfRequiredItems) {
+    private Discount calcDiscount(Product p, Offer offer, double unitPrice, double quantity) {
         int quantityAsInt = (int) quantity;
-        int numberOfXs = quantityAsInt / minNumOfRequiredItems;
+        int numberOfXs = quantityAsInt / offer.getMinNumOfRequiredItems();
         Discount discount = null;
 
         switch (offer.getOfferType()) {
@@ -80,7 +73,8 @@ public class ShoppingCart {
                 if (quantityAsInt >= 5) {
                     double discountTotal = quantity * unitPrice
                             - (offer.getArgument() * numberOfXs + quantityAsInt % 5 * unitPrice);
-                    discount = new Discount(p, minNumOfRequiredItems + " for " + offer.getArgument(), -discountTotal);
+                    discount = new Discount(p, offer.getMinNumOfRequiredItems() + " for " + offer.getArgument(),
+                            -discountTotal);
                 }
             default:
                 break;
