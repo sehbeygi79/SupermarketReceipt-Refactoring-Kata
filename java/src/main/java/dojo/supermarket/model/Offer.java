@@ -23,4 +23,17 @@ public class Offer {
     public double getArgument() {
         return argument;
     }
+
+    public int getMinNumOfRequiredItems() {
+        switch (offerType) {
+            case THREE_FOR_TWO:
+                return 3;
+            case TWO_FOR_AMOUNT:
+                return 2;
+            case FIVE_FOR_AMOUNT:
+                return 5;
+            default:
+                return 1;
+        }
+    }
 }

@@ -40,14 +40,7 @@ public class ShoppingCart {
                 double unitPrice = catalog.getUnitPrice(p);
                 int quantityAsInt = (int) quantity;
                 Discount discount = null;
-                int minNumOfRequiredItems = 1;
-                if (offer.getOfferType() == SpecialOfferType.THREE_FOR_TWO) {
-                    minNumOfRequiredItems = 3;
-                } else if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT) {
-                    minNumOfRequiredItems = 2;
-                } if (offer.getOfferType() == SpecialOfferType.FIVE_FOR_AMOUNT) {
-                    minNumOfRequiredItems = 5;
-                }
+                int minNumOfRequiredItems = offer.getMinNumOfRequiredItems();
                 int numberOfXs = quantityAsInt / minNumOfRequiredItems;
                 if (offer.getOfferType() == SpecialOfferType.TWO_FOR_AMOUNT && quantityAsInt >= 2) {
                     int intDivision = quantityAsInt / minNumOfRequiredItems;
