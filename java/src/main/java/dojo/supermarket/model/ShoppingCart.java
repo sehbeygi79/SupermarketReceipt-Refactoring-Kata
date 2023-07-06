@@ -45,37 +45,43 @@ public class ShoppingCart {
 
     private Discount calcDiscount(Product p, Offer offer, double unitPrice, double quantity) {
         int quantityAsInt = (int) quantity;
-        int numberOfXs = quantityAsInt / offer.getMinNumOfRequiredItems();
+        int quantityDivision = quantityAsInt / offer.getMinNumOfRequiredItems();
         Discount discount = null;
 
         switch (offer.getOfferType()) {
             case TWO_FOR_AMOUNT:
                 if (quantityAsInt >= 2) {
-                    double pricePerUnit = offer.getArgument() * numberOfXs;
-                    double theTotal = (quantityAsInt % 2) * unitPrice;
-                    double total = pricePerUnit + theTotal;
-                    double discountN =  quantity * unitPrice - total;
-                    discount = new Discount(p, "2 for " + offer.getArgument(), -discountN);
+                    double discountedPrice = offer.getArgument() * quantityDivision;
+                    double residuePrice = (quantityAsInt % 2) * unitPrice;
+                    double currPrice = discountedPrice + residuePrice;
+                    double discountAmount = quantity * unitPrice - currPrice;
+                    discount = new Discount(p, "2 for " + offer.getArgument(), -discountAmount);
                 }
                 break;
             case THREE_FOR_TWO:
                 if (quantityAsInt >= 3) {
-                    double discountAmount = quantity * unitPrice
-                            - ((numberOfXs * 2 * unitPrice) + quantityAsInt % 3 * unitPrice);
+                    double discountedPrice = quantityDivision * 2 * unitPrice;
+                    double residuePrice = (quantityAsInt % 3) * unitPrice;
+                    double currPrice = discountedPrice + residuePrice;
+                    double discountAmount = quantity * unitPrice - currPrice;
                     discount = new Discount(p, "3 for 2", -discountAmount);
                 }
                 break;
-            case TEN_PERCENT_DISCOUNT:
-                discount = new Discount(p, offer.getArgument() + "% off",
-                        -quantity * unitPrice * offer.getArgument() / 100.0);
+            case TEN_PERCENT_DISCOUNT: {
+                double discountAmount = quantity * unitPrice * offer.getArgument() / 100.0;
+                discount = new Discount(p, offer.getArgument() + "% off", -discountAmount);
+            }
                 break;
             case FIVE_FOR_AMOUNT:
                 if (quantityAsInt >= 5) {
-                    double discountTotal = quantity * unitPrice
-                            - (offer.getArgument() * numberOfXs + quantityAsInt % 5 * unitPrice);
+                    double discountedPrice = offer.getArgument() * quantityDivision;
+                    double residuePrice = (quantityAsInt % 5) * unitPrice;
+                    double currPrice = discountedPrice + residuePrice;
+                    double discountAmount = quantity * unitPrice - currPrice;
                     discount = new Discount(p, offer.getMinNumOfRequiredItems() + " for " + offer.getArgument(),
-                            -discountTotal);
+                            -discountAmount);
                 }
+                break;
             default:
                 break;
         }
