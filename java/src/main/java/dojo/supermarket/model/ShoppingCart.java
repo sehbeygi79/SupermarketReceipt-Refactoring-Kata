@@ -33,17 +33,17 @@ public class ShoppingCart {
     }
 
     void handleOffers(Receipt receipt, Map<Product, Offer> offers, SupermarketCatalog catalog) {
-        for (Product p : productQuantities().keySet()) {
-            if (offers.containsKey(p)) {
-                Discount discount = calcDiscount(p, offers.get(p),
-                        catalog.getUnitPrice(p), productQuantities.get(p));
+        for (Product product : productQuantities().keySet()) {
+            if (offers.containsKey(product)) {
+                Discount discount = calcDiscount(product, offers.get(product),
+                        catalog.getUnitPrice(product), productQuantities.get(product));
                 if (discount != null)
                     receipt.addDiscount(discount);
             }
         }
     }
 
-    private Discount calcDiscount(Product p, Offer offer, double unitPrice, double quantity) {
+    private Discount calcDiscount(Product product, Offer offer, double unitPrice, double quantity) {
         int quantityAsInt = (int) quantity;
         int quantityDivision = quantityAsInt / offer.getMinNumOfRequiredItems();
         Discount discount = null;
@@ -55,7 +55,7 @@ public class ShoppingCart {
                     double residuePrice = (quantityAsInt % 2) * unitPrice;
                     double currPrice = discountedPrice + residuePrice;
                     double discountAmount = quantity * unitPrice - currPrice;
-                    discount = new Discount(p, "2 for " + offer.getArgument(), -discountAmount);
+                    discount = new Discount(product, "2 for " + offer.getArgument(), -discountAmount);
                 }
                 break;
             case THREE_FOR_TWO:
@@ -64,12 +64,12 @@ public class ShoppingCart {
                     double residuePrice = (quantityAsInt % 3) * unitPrice;
                     double currPrice = discountedPrice + residuePrice;
                     double discountAmount = quantity * unitPrice - currPrice;
-                    discount = new Discount(p, "3 for 2", -discountAmount);
+                    discount = new Discount(product, "3 for 2", -discountAmount);
                 }
                 break;
             case TEN_PERCENT_DISCOUNT: {
                 double discountAmount = quantity * unitPrice * offer.getArgument() / 100.0;
-                discount = new Discount(p, offer.getArgument() + "% off", -discountAmount);
+                discount = new Discount(product, offer.getArgument() + "% off", -discountAmount);
             }
                 break;
             case FIVE_FOR_AMOUNT:
@@ -78,7 +78,7 @@ public class ShoppingCart {
                     double residuePrice = (quantityAsInt % 5) * unitPrice;
                     double currPrice = discountedPrice + residuePrice;
                     double discountAmount = quantity * unitPrice - currPrice;
-                    discount = new Discount(p, offer.getMinNumOfRequiredItems() + " for " + offer.getArgument(),
+                    discount = new Discount(product, offer.getMinNumOfRequiredItems() + " for " + offer.getArgument(),
                             -discountAmount);
                 }
                 break;
